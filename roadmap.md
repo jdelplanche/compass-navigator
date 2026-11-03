@@ -31,9 +31,10 @@
 - [ ] Authenticated end-to-end ingestion and published media verification: blocked by missing ingestion schema and account setup.
 
 ## Live Presence (request 2026-11-03)
-- [ ] Fix crash on "Stuur ook een anonieme vraag" under a Q&A pulse; open a dialog to write the question.
-- [ ] Rename Studio "Live-status" folder to "Live Presence" with blocks Indicator / Bericht / Pulse (ring switch).
-- [ ] Move "Status update" from Links en componenten into Live Presence.
-- [ ] Move Steam / Last.fm toggles into Live-koppelingen.
-- [ ] Collapse Privacyregels, API-sleutel, Eigen status into accordions.
-- [ ] Richer pulse composer (story-style: text backgrounds, fonts, stickers) and Command Center posting/management.
+- [x] Fix crash on "Stuur ook een anonieme vraag" under a Q&A pulse; open a dialog to write the question.
+- [x] Rename Studio "Live-status" folder to "Live Presence" with blocks Indicator / Bericht / Pulse (ring switch).
+- [x] Move "Status update" from Links en componenten into Live Presence.
+- [x] Move Steam / Last.fm toggles into Live-koppelingen.
+- [x] Collapse Privacyregels, API-sleutel, Eigen status into accordions.
+- [x] Richer pulse composer (story-style: text backgrounds, fonts, stickers) and Command Center posting/management.
+- [ ] Apply db/0191 (pulse styles) after 0185–0187 in Neon; styled pulses fail to save until then (plain text pulses unaffected).

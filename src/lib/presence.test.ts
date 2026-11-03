@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { activePresence, readStatusJson, spotlightCandidates, statusInput } from "./presence";
 const base = { id: "11111111-1111-4111-8111-111111111111", space: "alias", statusType: "micro_text" };
 it("accepts exactly 280 Unicode characters but rejects 281", () => {
