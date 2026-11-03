@@ -43,6 +43,7 @@ import { plural } from "@/lib/plural";
 import { getQuickPresence, setQuickPresence, type QuickPresence } from "@/lib/live-presence.functions";
 import { PRESENCE_DEFS } from "@/lib/avatar-decorations";
 import { PresenceComposer } from "@/components/qa/PresenceComposer";
+import { ActivePulses } from "@/components/presence/ActivePulses";
 import { Input } from "@/components/ui/input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -439,7 +440,8 @@ function LivePresenceWidget({ userId }: { userId: string }) {
               <span className="text-sm">Toon Pulse-ring om avatar</span>
               <Switch aria-label="Toon Pulse-ring om avatar" checked={d.pulseRing} disabled={busy} onCheckedChange={(v) => void apply({ pulseRing: v })} />
             </div>
-            {d.handle ? <PresenceComposer owner={userId} handle={d.handle} space="root" blocks={[]} /> : null}
+            {d.handle ? <PresenceComposer owner={userId} handle={d.handle} space="root" blocks={[]} variant="default" /> : null}
+            <ActivePulses handle={d.handle ?? null} />
           </div>
         </div>
       )}

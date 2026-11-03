@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Copy, KeyRound } from "lucide-react";
+import { ChevronDown, Copy, KeyRound, MessageSquareText, ShieldCheck } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -14,7 +15,20 @@ const QK = ["custom-presence"];
 const DAYS = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
 const DURATIONS = [{ m: 30, l: "30 min" }, { m: 60, l: "1 uur" }, { m: 240, l: "4 uur" }, { m: 0, l: "Geen einde" }];
 
-/** Custom status, presence API key and stealth rules. */
+function Fold({ icon, title, hint, children }: { icon: ReactNode; title: string; hint?: string; children: ReactNode }) {
+  return (
+    <details className="group rounded-xl border border-border">
+      <summary className="flex cursor-pointer list-none items-center gap-2 p-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
+        {icon}<span className="flex-1">{title}</span>
+        {hint && <span className="max-w-[40%] truncate text-[11px] font-normal text-muted-foreground">{hint}</span>}
+        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="space-y-3 border-t border-border p-3">{children}</div>
+    </details>
+  );
+}
+
+/** Custom status, presence API key and stealth rules — each folded to keep mobile short. */
 export function CustomPresencePanel() {
   const qc = useQueryClient();
   const get = useServerFn(getCustomPresence);
@@ -38,9 +52,8 @@ export function CustomPresencePanel() {
   if (q.isError) return <p className="text-xs text-muted-foreground">Eigen status is nu niet beschikbaar.</p>;
 
   return (
-    <section className="space-y-4 rounded-xl border border-border p-3">
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Eigen status</p>
+    <section className="space-y-2">
+      <Fold icon={<MessageSquareText className="h-4 w-4" aria-hidden />} title="Eigen status" hint={q.data?.statusText ?? undefined}>
         <Input value={text} maxLength={140} onChange={(e) => setText(e.target.value)} placeholder="Bijv. In een meeting" aria-label="Eigen status" />
         <div className="flex flex-wrap gap-1.5">
           {DURATIONS.map((d) => (
@@ -52,10 +65,9 @@ export function CustomPresencePanel() {
           {q.data?.statusText && <Button type="button" size="sm" variant="ghost" onClick={() => run(() => setStatus({ data: null }), "Status gewist")}>Wissen</Button>}
         </div>
         {q.data?.expiresAt && <p className="text-xs text-muted-foreground">Vervalt om {new Date(q.data.expiresAt).toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" })}.</p>}
-      </div>
+      </Fold>
 
-      <div className="space-y-2 border-t border-border pt-3">
-        <p className="flex items-center gap-1.5 text-sm font-medium"><KeyRound className="h-4 w-4" aria-hidden /> API-sleutel voor automatisering</p>
+      <Fold icon={<KeyRound className="h-4 w-4" aria-hidden />} title="API-sleutel voor automatisering" hint={q.data?.hasKey ? "Actief" : undefined}>
         <p className="text-xs text-muted-foreground">Werk je status bij vanuit Raycast, Apple Shortcuts of Home Assistant met <code>POST /api/v1/presence</code>.</p>
         {newKey && (
           <div className="flex items-center gap-2 rounded-lg bg-muted p-2">
@@ -68,10 +80,9 @@ export function CustomPresencePanel() {
           <Button type="button" size="sm" variant="outline" onClick={async () => { try { const r = await rotate(); setNewKey(r.key); refresh(); } catch { toast.error(trI18n.t("ui.12f7bc2c65")); } }}>{q.data?.hasKey ? "Nieuwe sleutel" : "Sleutel aanmaken"}</Button>
           {q.data?.hasKey && <Button type="button" size="sm" variant="ghost" onClick={() => { setNewKey(null); void run(() => revoke(), "Sleutel ingetrokken"); }}>Intrekken</Button>}
         </div>
-      </div>
+      </Fold>
 
-      <div className="space-y-3 border-t border-border pt-3">
-        <p className="text-sm font-medium">Privacyregels</p>
+      <Fold icon={<ShieldCheck className="h-4 w-4" aria-hidden />} title="Privacyregels">
         <div>
           <p className="mb-1.5 text-xs text-muted-foreground">Verbergen op deze dagen</p>
           <div className="flex flex-wrap gap-1">
@@ -90,7 +101,7 @@ export function CustomPresencePanel() {
           <span>Expliciete nummers verbergen</span>
           <Switch checked={rules.hideExplicit} onCheckedChange={(v) => updateRules({ ...rules, hideExplicit: v })} />
         </label>
-      </div>
+      </Fold>
     </section>
   );
 }

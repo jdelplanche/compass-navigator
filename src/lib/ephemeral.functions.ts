@@ -8,3 +8,8 @@ export const getPublicPresence=createServerFn({method:"GET"})
 export const postPresence=createServerFn({method:"POST"}).middleware([requireAuth])
  .inputValidator((input:unknown)=>statusInput.parse(input))
  .handler(async({data,context})=>{const {createPresence}=await import("./ephemeral.server");return {story:await createPresence(context.userId,data)};});
+export const listMyPulses=createServerFn({method:"GET"}).middleware([requireAuth])
+ .handler(async({context})=>{const {listMyPresence}=await import("./ephemeral.server");return {pulses:await listMyPresence(context.userId)};});
+export const deleteMyPulse=createServerFn({method:"POST"}).middleware([requireAuth])
+ .inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input))
+ .handler(async({data,context})=>{const {deleteMyPresence}=await import("./ephemeral.server");return {ok:await deleteMyPresence(context.userId,data.id)};});
