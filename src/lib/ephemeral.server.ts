@@ -29,3 +29,16 @@ export async function createPresence(owner: string, input: StatusInput): Promise
   const task=deliverBroadcasts(owner).catch(()=>undefined);if(!registerBackgroundTask(task))await task;
   return {id:String(row["id"]),statusType:data.statusType,...data.payload,createdAt:new Date(String(row["created_at"])).toISOString(),expiresAt:new Date(String(row["expires_at"])).toISOString()};
 }
+export type MyPulse = { id: string; space: "root" | "alias"; statusType: "micro_text" | "omni_drop"; text: string | null; createdAt: string; expiresAt: string };
+/** Owner's own active pulses, newest first (Command Center management). */
+export async function listMyPresence(owner: string): Promise<MyPulse[]> {
+  const rows = await sql`select id,space,status_type::text as status_type,content_payload->>'text' as text,created_at,expires_at
+    from public.ephemeral_statuses where user_id=${owner} and expires_at>now() order by created_at desc limit 50` as Record<string, unknown>[];
+  return rows.map(r => ({ id: String(r["id"]), space: r["space"] === "alias" ? "alias" : "root", statusType: r["status_type"] === "omni_drop" ? "omni_drop" : "micro_text",
+    text: (r["text"] as string | null) ?? null, createdAt: new Date(String(r["created_at"])).toISOString(), expiresAt: new Date(String(r["expires_at"])).toISOString() }));
+}
+/** Ends a pulse early; only the owner's own row can match. */
+export async function deleteMyPresence(owner: string, id: string): Promise<boolean> {
+  const rows = await sql`delete from public.ephemeral_statuses where id=${id} and user_id=${owner} returning id` as unknown[];
+  return rows.length > 0;
+}
