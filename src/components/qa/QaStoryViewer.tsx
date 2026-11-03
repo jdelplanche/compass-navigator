@@ -10,6 +10,7 @@ import { ProceduralStoryBackground } from "./ProceduralStoryBackground";
 import { activePresence, type PresenceStory } from "@/lib/presence";
 import { galleryImageSrc } from "@/lib/image-proxy-rules";
 import { storedPromptLabel } from "@/lib/qa/prompts";
+import { QaAskForm } from "./QaAskForm";
 
 const STORY_MS = 6500;
 
@@ -33,7 +34,9 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
 }) {
   const { t, locale } = useI18n();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [pausedRaw, setPaused] = useState(false);
+  const [asking, setAsking] = useState(false);
+  const paused = pausedRaw || asking;
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const pointer = useRef<{ x: number; y: number } | null>(null);
@@ -50,9 +53,9 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
   const prev = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
 
   useEffect(() => {
-    const timer=setInterval(()=>{if(story && activePresence([story],Date.now()).length===0) next();},1000);
+    const timer=setInterval(()=>{if(!asking && story && activePresence([story],Date.now()).length===0) next();},1000);
     return()=>clearInterval(timer);
-  },[story,next]);
+  },[story,next,asking]);
 
   useEffect(() => {
     const focused = document.activeElement;
@@ -64,6 +67,7 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
+      if (asking) { if (e.key === "Escape") setAsking(false); return; }
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowRight") next();
       else if (e.key === "ArrowLeft") prev();
@@ -76,7 +80,7 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
     };
     window.addEventListener("keydown", onKey);
     return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prevOverflow; };
-  }, [onClose, next, prev]);
+  }, [onClose, next, prev, asking]);
 
   if (!story) return null;
   const promptLabel = storedPromptLabel(story.prompt, t) ?? t("pages.qa.story.anonymous");
@@ -160,14 +164,38 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
           </article>}
         </div>
 
-        <a
-          href={qaPaths(handle, space).ask}
+        <button
+          type="button"
           onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          onClick={() => setAsking(true)}
           className="relative z-10 mb-4 inline-flex min-h-12 items-center justify-center rounded-full bg-story-card px-5 text-sm font-semibold text-story-ink transition-transform active:scale-[0.98]"
         >
           {t("pages.qa.story.askToo")}
-        </a>
+        </button>
       </div>
+      {asking && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("pages.qa.story.askToo")}
+          className="absolute inset-0 z-20 flex touch-auto select-text items-end justify-center bg-story-viewport/80 p-3 backdrop-blur-sm sm:items-center"
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          onPointerCancel={(e) => e.stopPropagation()}
+          onClick={(e) => { if (e.target === e.currentTarget) setAsking(false); }}
+        >
+          <div className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-3xl bg-background p-4 text-foreground shadow-2xl animate-in slide-in-from-bottom-4 fade-in duration-200">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <a href={qaPaths(handle, space).ask} className="text-xs text-muted-foreground underline-offset-2 hover:underline">@{handle}</a>
+              <Button variant="ghost" size="icon" type="button" onClick={() => setAsking(false)} aria-label={t("pages.qa.story.close")}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <QaAskForm handle={handle} space={space} headline={t("pages.qa.story.askToo")} size="hub" />
+          </div>
+        </div>
+      )}
     </div>,
     document.body,
   );
