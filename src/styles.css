@@ -1382,3 +1382,15 @@ select:focus-visible {
   .qa-shimmer { animation: none; background-position: 50% 0; }
   .qa-wand-busy { animation: none; }
 }
+
+/* Pulse backgrounds: closed set mirrored by PULSE_BGS (src/lib/presence.ts). */
+.pulse-bg-sunset { background: linear-gradient(160deg, hsl(18 92% 58%), hsl(338 78% 52%) 60%, hsl(268 60% 42%)); }
+.pulse-bg-ocean { background: linear-gradient(160deg, hsl(192 85% 48%), hsl(214 80% 40%) 60%, hsl(232 55% 22%)); }
+.pulse-bg-forest { background: linear-gradient(160deg, hsl(var(--story-ring)), hsl(var(--story-ring-2)) 55%, hsl(var(--story-bg-from))); }
+.pulse-bg-noir { background: linear-gradient(160deg, hsl(30 6% 18%), hsl(30 6% 6%)); }
+.pulse-bg-candy { background: linear-gradient(160deg, hsl(320 85% 72%), hsl(276 75% 66%) 55%, hsl(200 85% 70%)); }
+.pulse-bg-gold { background: linear-gradient(160deg, hsl(44 95% 62%), hsl(28 85% 48%) 60%, hsl(14 60% 26%)); }
+.pulse-font-classic { font-family: inherit; font-weight: 600; }
+.pulse-font-display { font-family: var(--font-display, inherit); font-weight: 800; letter-spacing: -0.02em; }
+.pulse-font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
+.pulse-font-hand { font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive; font-weight: 600; }
