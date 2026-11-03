@@ -11,6 +11,7 @@ export const Route = createFileRoute("/qr")({
     const s = search as Record<string, unknown>;
     if (typeof s["type"] === "string") params.set("type", s["type"]);
     if (typeof s["url"] === "string") params.set("url", s["url"]);
+    if (typeof s["workspace"] === "string") params.set("workspace", s["workspace"]);
     throw redirect({ href: `/studio?${params.toString()}`, statusCode: 301 });
   },
 });

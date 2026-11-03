@@ -1280,7 +1280,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                     <h2 className="text-lg font-medium">{t("studio.editor.qr")}</h2>
                     <p className="text-sm text-muted-foreground">{t("studio.editor.qrHelp")}</p>
                     <a
-                      href="/qr?type=profile_hub"
+                      href={isWorkspace && workspaceSlug ? `/qr?type=profile_hub&workspace=${encodeURIComponent(workspaceSlug)}` : "/qr?type=profile_hub"}
                       className="inline-flex h-9 items-center gap-2 rounded-xl bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-90"
                     >
                       <QrCode className="h-3.5 w-3.5" aria-hidden /> {t("studio.editor.qrDownload")}
