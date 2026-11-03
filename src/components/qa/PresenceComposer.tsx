@@ -15,6 +15,7 @@ import type { ProfileBlock } from "@/lib/profile";
 import { ProceduralStoryBackground } from "./ProceduralStoryBackground";
 import { PulseText } from "@/components/presence/PulseText";
 import { cn } from "@/lib/utils";
+import { galleryImageSrc } from "@/lib/image-proxy-rules";
 
 const QUICK = ["presence.quick.bored", "presence.quick.gaming", "presence.quick.working", "presence.quick.music", "presence.quick.coffee", "presence.quick.live"] as const;
 const ALIGN_ICON = { left: AlignLeft, center: AlignCenter, right: AlignRight } as const;
@@ -120,7 +121,7 @@ export function PresenceComposer({ owner, handle, space, blocks, label, variant 
         </div> : <div className="grid max-h-72 grid-cols-2 gap-2 overflow-y-auto">{candidates.length ? candidates.map((c) => {
           const key = `${c.blockId}:${c.itemId ?? ""}`;
           return <button key={key} type="button" aria-pressed={selected === key} onClick={() => setSelected(key)} className={cn("overflow-hidden rounded-xl border border-border text-left transition hover:bg-muted", selected === key && "ring-2 ring-ring")}>
-            {c.mediaUrl ? <img src={c.mediaUrl} alt="" className="aspect-square w-full object-cover" loading="lazy" /> : <span className="flex aspect-square w-full items-center justify-center bg-muted"><ImageIcon className="h-6 w-6 text-muted-foreground" /></span>}
+            {galleryImageSrc(c.mediaUrl) ? <img src={galleryImageSrc(c.mediaUrl) ?? undefined} alt="" className="aspect-square w-full object-cover" loading="lazy" /> : <span className="flex aspect-square w-full items-center justify-center bg-muted"><ImageIcon className="h-6 w-6 text-muted-foreground" /></span>}
             <span className="block truncate px-2 py-1.5 text-xs font-medium">{c.title}</span>
           </button>;
         }) : <p className="col-span-2 text-sm text-muted-foreground">{t("presence.noGrid")}</p>}</div>}

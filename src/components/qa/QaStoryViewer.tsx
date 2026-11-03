@@ -11,6 +11,7 @@ import { activePresence, type PresenceStory } from "@/lib/presence";
 import { galleryImageSrc } from "@/lib/image-proxy-rules";
 import { storedPromptLabel } from "@/lib/qa/prompts";
 import { QaAskForm } from "./QaAskForm";
+import { PulseText } from "@/components/presence/PulseText";
 
 const STORY_MS = 6500;
 
@@ -148,7 +149,7 @@ export function QaStoryViewer({ stories, handle, space, displayName, avatarUrl, 
         <div className="relative flex flex-1 items-center justify-center py-6">
           <Button variant="ghost" type="button" className="absolute inset-y-0 left-0 h-full w-1/3 rounded-none hover:bg-transparent" onClick={() => { if (!suppressTap.current) prev(); }} aria-label={t("pages.qa.story.prev")} />
           <Button variant="ghost" type="button" className="absolute inset-y-0 right-0 h-full w-2/3 rounded-none hover:bg-transparent" onClick={() => { if (!suppressTap.current) next(); }} aria-label={t("pages.qa.story.next")} />
-          {story.statusType === "micro_text" ? <article className="pointer-events-none relative w-full"><p className="whitespace-pre-wrap break-words text-center font-display text-3xl leading-snug">{story.text}</p></article> : story.statusType === "omni_drop" ? <article className="relative z-10 w-full overflow-hidden rounded-lg bg-story-card text-story-ink">
+          {story.statusType === "micro_text" ? <article className={`pointer-events-none relative w-full ${story.bg && story.bg !== "none" ? "aspect-[9/16] max-h-full overflow-hidden rounded-[28px] shadow-2xl" : ""}`}><PulseText text={story.text ?? ""} bg={story.bg} font={story.font ?? (story.bg ? "classic" : "display")} align={story.align} sticker={story.sticker} /></article> : story.statusType === "omni_drop" ? <article className="relative z-10 w-full overflow-hidden rounded-lg bg-story-card text-story-ink">
             {galleryImageSrc(story.mediaUrl) && <img src={galleryImageSrc(story.mediaUrl) ?? undefined} alt="" className="aspect-square w-full object-cover"/>}
             <a href={story.targetUrl} target={story.targetUrl?.startsWith("/")?undefined:"_blank"} rel="noopener noreferrer" onPointerDown={e=>e.stopPropagation()} className="block px-6 py-5 text-xl font-semibold">{story.title}{story.badge&&<span className="mt-2 block text-sm">{story.badge}</span>}</a>
           </article> : <article key={story.id} className="pointer-events-none max-h-full w-full overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
