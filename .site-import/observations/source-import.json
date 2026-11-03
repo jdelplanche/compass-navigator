@@ -1,0 +1,41 @@
+{
+  "importType": "full repository source",
+  "checks": [
+    {
+      "route": "/",
+      "viewport": [
+        1280,
+        1800
+      ],
+      "trigger": "Open menu",
+      "observed": "ROUT\nExplore\nNL\nEN\nFR\nDE\n\nSOVEREIGN DIGITAL NODE\n\nSovereign Digital Identity & Routing Infrastructure\n\nPaste a URL, type an @handle or a command \u2014 European, open source, no trackers.\n\nEnter a URL, command or @handle\n\nPress Enter to route\n\nhttps://\n@handle\n/studio\n/dashboard\nClaim your identity\nExplore the OS\nNavigate anywhere fast with\n\u2318K\n\nTHE ECOSYSTEM\n\nOne sovereign operating system for identity, communication and routing\n\nCreate in the Studio, manage in your Command Center and connect apps through \u201cSign in with ROUT\u201d \u2014 all on one domain, with your data in Europe.\n\njona\nrout.be/u/jona\nIDENTITY\nSign in with ROUT\n\nOpenID Connect with pairwise identifiers, passkey step-up and private relays: apps only get what you share.\n\nHow Sign in with ROUT works\nW\n\nmaximilien.brussels \u2192 rout.be/w/maximilien\n\nChronos\nCOLLABORATE\nWorkspaces\n\nSeparate environments with their own profile hub, QR codes, domains, team roles and Developer Console.\n\nDiscover workspaces\n$ npx @routbe/mcp-server\n\u2713 tools: work",
+      "screenshot": "/tmp/browser/compass-import/menu-1280.png",
+      "status": "observed",
+      "sourceComparison": "not applicable: source repository import, not website capture"
+    },
+    {
+      "route": "/",
+      "viewport": [
+        390,
+        844
+      ],
+      "trigger": "Open menu",
+      "observed": "ROUT\n\nSOVEREIGN DIGITAL NODE\n\nSovereign Digital Identity & Routing Infrastructure\n\nPaste a URL, type an @handle or a command \u2014 European, open source, no trackers.\n\nEnter a URL, command or @handle\n\nPress Enter to route\n\nhttps://\n@handle\n/studio\n/dashboard\nClaim your identity\nExplore the OS\n\nTHE ECOSYSTEM\n\nOne sovereign operating system for identity, communication and routing\n\nCreate in the Studio, manage in your Command Center and connect apps through \u201cSign in with ROUT\u201d \u2014 all on one domain, with your data in Europe.\n\njona\nrout.be/u/jona\nIDENTITY\nSign in with ROUT\n\nOpenID Connect with pairwise identifiers, passkey step-up and private relays: apps only get what you share.\n\nHow Sign in with ROUT works\nW\n\nmaximilien.brussels \u2192 rout.be/w/maximilien\n\nChronos\nCOLLABORATE\nWorkspaces\n\nSeparate environments with their own profile hub, QR codes, domains, team roles and Developer Console.\n\nDiscover workspaces\n$ npx @routbe/mcp-server\n\u2713 tools: workspaces, qr\n\u2713 scope: profile:draft\n\u258d\nBUILD\nAPI & Dev",
+      "screenshot": "/tmp/browser/compass-import/menu-390.png",
+      "status": "observed",
+      "sourceComparison": "not applicable: source repository import, not website capture"
+    }
+  ],
+  "verified": [
+    "Build succeeds",
+    "Routing test passes",
+    "Home and sign-in pages render at desktop and phone sizes"
+  ],
+  "blocked": [
+    "Accounts, database, email, payments and provider flows require service setup"
+  ],
+  "notVerified": [
+    "All 369 routes and authenticated operations",
+    "Live website visual comparison"
+  ]
+}
