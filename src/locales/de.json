@@ -1705,5 +1705,9 @@
   "footer.link.privacy": "Datenschutzerklärung",
   "footer.link.terms": "Nutzungsbedingungen",
   "footer.home": "ROUT Startseite",
-  "footer.credit": "Open Source (AGPLv3) · Gestaltet & entwickelt von"
+  "footer.credit": "Open Source (AGPLv3) · Gestaltet & entwickelt von",
+  "dataExport.title": "Meine Daten herunterladen",
+  "dataExport.body": "Alles, was wir über dich speichern, in einer lesbaren JSON-Datei: Profil, Links, verifizierte Socials, E-Mail-Aliase und Domains.",
+  "dataExport.vault": "Vollständiger Tresor (ZIP)",
+  "dataExport.failed": "Export fehlgeschlagen."
 }
