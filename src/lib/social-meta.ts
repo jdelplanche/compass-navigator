@@ -13,6 +13,12 @@ export const OG_IMAGE = "/brand/og/home-en.png";
 
 type Card = { title: string; description: string };
 
+/** Valid Open Graph language_TERRITORY tags (en_EN is not a real territory). */
+const OG_LOCALES: Record<Locale, string> = { nl: "nl_BE", en: "en_US", fr: "fr_BE", de: "de_DE" };
+export function ogLocale(locale: Locale): string {
+  return OG_LOCALES[locale] ?? "en_US";
+}
+
 export const SOCIAL_CARDS: Record<Locale, Card> = {
   nl: {
     title: "ROUT - Sovereign Digital Identity OS",
@@ -51,7 +57,7 @@ export function socialMeta(locale: Locale, absoluteImageUrl?: string | null) {
     { name: "description", content: card.description },
     { property: "og:title", content: card.title },
     { property: "og:description", content: card.description },
-    { property: "og:locale", content: `${locale}_${locale.toUpperCase()}` },
+    { property: "og:locale", content: ogLocale(locale) },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
     ...(image
@@ -105,7 +111,7 @@ export function profileSocialMeta(input: {
     { property: "og:type", content: "profile" },
     { property: "og:site_name", content: "ROUT" },
     { property: "og:url", content: url },
-    { property: "og:locale", content: `${input.locale}_${input.locale.toUpperCase()}` },
+    { property: "og:locale", content: ogLocale(input.locale) },
     { property: "og:image", content: image },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },

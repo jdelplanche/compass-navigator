@@ -1705,5 +1705,9 @@
   "footer.link.privacy": "Politique de confidentialité",
   "footer.link.terms": "Conditions",
   "footer.home": "Accueil ROUT",
-  "footer.credit": "Open source (AGPLv3) · Conçu & développé par"
+  "footer.credit": "Open source (AGPLv3) · Conçu & développé par",
+  "dataExport.title": "Télécharger mes données",
+  "dataExport.body": "Tout ce que nous conservons sur vous dans un fichier JSON lisible : profil, liens, réseaux vérifiés, alias e-mail et domaines.",
+  "dataExport.vault": "Coffre complet (ZIP)",
+  "dataExport.failed": "Échec de l'export."
 }

@@ -1705,5 +1705,9 @@
   "footer.link.privacy": "Privacy policy",
   "footer.link.terms": "Terms",
   "footer.home": "ROUT home",
-  "footer.credit": "Open source (AGPLv3) · Designed & engineered by"
+  "footer.credit": "Open source (AGPLv3) · Designed & engineered by",
+  "dataExport.title": "Download my data",
+  "dataExport.body": "Everything we keep about you in one readable JSON file: profile, links, verified socials, email aliases and domains.",
+  "dataExport.vault": "Full vault (ZIP)",
+  "dataExport.failed": "Export failed."
 }

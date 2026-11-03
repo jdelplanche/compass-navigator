@@ -1705,5 +1705,9 @@
   "footer.link.privacy": "Privacybeleid",
   "footer.link.terms": "Voorwaarden",
   "footer.home": "ROUT startpagina",
-  "footer.credit": "Open source (AGPLv3) · Ontworpen & gebouwd door"
+  "footer.credit": "Open source (AGPLv3) · Ontworpen & gebouwd door",
+  "dataExport.title": "Download mijn data",
+  "dataExport.body": "Alles wat we van je bijhouden in één leesbaar JSON-bestand: profiel, links, geverifieerde socials, e-mailaliassen en domeinen.",
+  "dataExport.vault": "Volledige kluis (ZIP)",
+  "dataExport.failed": "Export mislukt."
 }

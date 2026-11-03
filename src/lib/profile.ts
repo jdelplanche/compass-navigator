@@ -86,6 +86,19 @@ export function scheduledBlocks(blocks: ProfileBlock[], now: number = Date.now()
   return [...visible.filter((b) => b.pinned), ...visible.filter((b) => !b.pinned)];
 }
 
+/** Earliest future start/expiry moment (ms) among blocks, or null when nothing is pending. */
+export function nextScheduleBoundary(blocks: Pick<ProfileBlock, "startsAt" | "expiresAt" | "hidden">[], now: number = Date.now()): number | null {
+  let next: number | null = null;
+  for (const b of blocks) {
+    if (b.hidden) continue;
+    for (const raw of [b.startsAt, b.expiresAt]) {
+      const at = raw ? Date.parse(raw) : NaN;
+      if (Number.isFinite(at) && at > now && (next === null || at < next)) next = at;
+    }
+  }
+  return next;
+}
+
 /** Zet een ingetypt webadres om naar een volledige https-URL. */
 export function sanitizeUrl(raw: string): string {
   const value = raw.trim();

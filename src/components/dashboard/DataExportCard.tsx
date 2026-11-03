@@ -32,7 +32,7 @@ export function DataExportCard() {
       URL.revokeObjectURL(url);
       toast.success(trI18n.t("ui.1934829d4b"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Export mislukt.");
+      toast.error(error instanceof Error ? error.message : trI18n.t("dataExport.failed"));
     } finally {
       setBusy(false);
     }
@@ -41,10 +41,9 @@ export function DataExportCard() {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="min-w-0">
-        <p className="text-sm font-medium">Download mijn data</p>
+        <p className="text-sm font-medium">{trI18n.t("dataExport.title")}</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Alles wat we van je bijhouden in één leesbaar JSON-bestand: profiel, links, geverifieerde
-          socials, e-mailaliassen en domeinen.
+          {trI18n.t("dataExport.body")}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -80,12 +79,12 @@ export function DataExportCard() {
               a.click();
               URL.revokeObjectURL(url);
             } catch (e) {
-              toast.error(e instanceof Error ? e.message : "Export mislukt.");
+              toast.error(e instanceof Error ? e.message : trI18n.t("dataExport.failed"));
             }
           }}
         >
           <Download className="h-4 w-4" />
-          Volledige kluis (ZIP)
+          {trI18n.t("dataExport.vault")}
         </Button>
       </div>
     </div>
