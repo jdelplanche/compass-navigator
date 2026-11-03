@@ -65,13 +65,9 @@ export async function recordVisit(input: RecordVisitInput): Promise<{ recorded: 
   }
   // Shared dedupe across all server instances: the in-memory map is only a fast path.
   const dup = (await sql`
-    select 1 from public.profile_visits
-     where visitor_hash = ${visitorHash} and handle = ${handle}
-       and space = ${input.space === "root" ? "root" : "alias"}
-       and created_at > now() - interval '30 minutes'
-     limit 1
+    select public.rout_visit_seen_recently(${visitorHash}, ${handle}, ${input.space === "root" ? "root" : "alias"}) as seen
   `) as Row[];
-  if (dup.length > 0) return { recorded: false };
+  if (dup[0]?.["seen"] === true) return { recorded: false };
 
   const ownerRows = (await sql`
     select id from public.profiles where lower(username) = ${handle} limit 1
