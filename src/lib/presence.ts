@@ -5,15 +5,22 @@ import { normalizeSocialGridTarget, parseSocialGridConfig } from "./social-grid"
 export const STATUS_HOURS = 24;
 export const MICRO_TEXT_MAX = 280;
 export const statusTheme = z.enum(["aurora", "glass"]).default("aurora");
+/** Closed style sets; mirrored by db/0191 validate_ephemeral_presence. */
+export const PULSE_BGS = ["none", "sunset", "ocean", "forest", "noir", "candy", "gold"] as const;
+export const PULSE_FONTS = ["classic", "display", "mono", "hand"] as const;
+export const PULSE_ALIGNS = ["left", "center", "right"] as const;
+export const PULSE_STICKERS = ["🔥", "✨", "💬", "🎧", "🎮", "📍", "☕", "💻", "🎉", "😴", "❤️", "👀"] as const;
+export type PulseBg = typeof PULSE_BGS[number]; export type PulseFont = typeof PULSE_FONTS[number]; export type PulseAlign = typeof PULSE_ALIGNS[number];
 const key = z.string().min(1).max(100);
 export const statusInput = z.discriminatedUnion("statusType", [
-  z.object({ id: z.string().uuid(), space: z.enum(["root", "alias"]), statusType: z.literal("micro_text"), payload: z.object({ text: z.string().trim().min(1).refine(s => [...s].length <= MICRO_TEXT_MAX, "max_280"), theme: statusTheme }).strict() }).strict(),
+  z.object({ id: z.string().uuid(), space: z.enum(["root", "alias"]), statusType: z.literal("micro_text"), payload: z.object({ text: z.string().trim().min(1).refine(s => [...s].length <= MICRO_TEXT_MAX, "max_280"), theme: statusTheme, bg: z.enum(PULSE_BGS).optional(), font: z.enum(PULSE_FONTS).optional(), align: z.enum(PULSE_ALIGNS).optional(), sticker: z.enum(PULSE_STICKERS).optional() }).strict() }).strict(),
   z.object({ id: z.string().uuid(), space: z.enum(["root", "alias"]), statusType: z.literal("omni_drop"), payload: z.object({ blockId: key, itemId: key.optional() }).strict() }).strict(),
 ]);
 export type StatusInput = z.infer<typeof statusInput>;
 export type PresenceStory = {
   id: string; statusType: "qa_reply" | "micro_text" | "omni_drop";
   createdAt: string; expiresAt: string; theme?: "aurora" | "glass";
+  bg?: PulseBg | null; font?: PulseFont | null; align?: PulseAlign | null; sticker?: string | null;
   text?: string; question?: string; answer?: string; prompt?: string | null;
   blockId?: string; title?: string; targetUrl?: string; mediaUrl?: string; badge?: string;
   pending?: boolean;
