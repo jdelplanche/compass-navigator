@@ -23,3 +23,13 @@ it("refuses multipart and binary even with JSON-like contents", async () => {
     await expect(readStatusJson(new Request("https://example.com",{method:"POST",headers:{"content-type":type},body:"{}"}))).rejects.toMatchObject({statusCode:415});
   }
 });
+describe("pulse styles", () => {
+  const id = "22222222-2222-4222-8222-222222222222";
+  it("accepts a known background, font, alignment and sticker", () => {
+    expect(statusInput.safeParse({ id, space: "root", statusType: "micro_text", payload: { text: "Bored", bg: "sunset", font: "hand", align: "left", sticker: "🔥" } }).success).toBe(true);
+  });
+  it("rejects unknown style values", () => {
+    expect(statusInput.safeParse({ id, space: "root", statusType: "micro_text", payload: { text: "Bored", bg: "url(evil)" } }).success).toBe(false);
+    expect(statusInput.safeParse({ id, space: "root", statusType: "micro_text", payload: { text: "Bored", sticker: "<b>" } }).success).toBe(false);
+  });
+});
