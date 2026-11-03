@@ -63,6 +63,15 @@ export async function recordVisit(input: RecordVisitInput): Promise<{ recorded: 
   if (recent.size > 5000) {
     for (const [k, at] of recent) if (now - at > DEDUPE_MS) recent.delete(k);
   }
+  // Shared dedupe across all server instances: the in-memory map is only a fast path.
+  const dup = (await sql`
+    select 1 from public.profile_visits
+     where visitor_hash = ${visitorHash} and handle = ${handle}
+       and space = ${input.space === "root" ? "root" : "alias"}
+       and created_at > now() - interval '30 minutes'
+     limit 1
+  `) as Row[];
+  if (dup.length > 0) return { recorded: false };
 
   const ownerRows = (await sql`
     select id from public.profiles where lower(username) = ${handle} limit 1

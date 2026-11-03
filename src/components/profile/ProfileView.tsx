@@ -39,6 +39,9 @@ import {
   isPromoBlock,
   isWidgetBlock,
   scheduledBlocks,
+  applyVisibilityRules,
+  liveStateFromPresence,
+  nextScheduleBoundary,
   themeOf,
   type ProfileRecord,
 } from "@/lib/profile";
@@ -162,7 +165,15 @@ export function ProfileView({
   const lv = (id: SectionId) => sectionVisible(layers, id);
   const sectionStyle = (id: SectionId) => ({ order: sectionOrder(layers, id), display: lv(id) ? undefined : "none" });
   const fxOn = lv("fx");
-  const blocks = scheduledBlocks(profile.blocks).filter(
+  // Re-render exactly when a scheduled block starts or expires (no reload needed).
+  const [scheduleTick, setScheduleTick] = useState(0);
+  useEffect(() => {
+    const next = nextScheduleBoundary(profile.blocks);
+    if (next === null) return;
+    const id = window.setTimeout(() => setScheduleTick((n) => n + 1), Math.min(Math.max(next - Date.now(), 0) + 250, 2_147_000_000));
+    return () => window.clearTimeout(id);
+  }, [profile.blocks, scheduleTick]);
+  const blocks = applyVisibilityRules(scheduledBlocks(profile.blocks), liveStateFromPresence(prefs.presence)).filter(
     (b) =>
       b.value.trim() !== "" ||
       b.kind === "newsletter" ||
