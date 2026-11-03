@@ -29,3 +29,11 @@
 - [ ] Standalone daemon TypeScript check: separate worker/tsconfig.json supplied; manual typecheck execution is disallowed in this environment, so a tsgo exit-0 guarantee is not provided.
 - [ ] Deploy daemon and activate migration: requires persistent PostgreSQL access (the Neon HTTP connector cannot LISTEN), worker hosting, storage credentials and shared realtime secret.
 - [ ] Authenticated end-to-end ingestion and published media verification: blocked by missing ingestion schema and account setup.
+
+## Live Presence (request 2026-11-03)
+- [ ] Fix crash on "Stuur ook een anonieme vraag" under a Q&A pulse; open a dialog to write the question.
+- [ ] Rename Studio "Live-status" folder to "Live Presence" with blocks Indicator / Bericht / Pulse (ring switch).
+- [ ] Move "Status update" from Links en componenten into Live Presence.
+- [ ] Move Steam / Last.fm toggles into Live-koppelingen.
+- [ ] Collapse Privacyregels, API-sleutel, Eigen status into accordions.
+- [ ] Richer pulse composer (story-style: text backgrounds, fonts, stickers) and Command Center posting/management.
