@@ -9,6 +9,7 @@ import { LiveIntegrations, useLiveIntegrationCount } from "@/components/studio/L
 import type { ProfileDisplayPrefs } from "@/lib/profile-display";
 import { Switch } from "@/components/ui/switch";
 import { PresenceComposer } from "@/components/qa/PresenceComposer";
+import { ActivePulses } from "@/components/presence/ActivePulses";
 import type { ProfileBlock } from "@/lib/profile";
 import type { ReactNode } from "react";
 
@@ -54,7 +55,7 @@ export function LiveStatusAccordion({ prefs, setPref, composer }: { prefs: Profi
               <p className="text-sm font-medium">{t("studio.live.pulseRing")}</p>
               <Switch aria-label={t("studio.live.pulseRing")} checked={prefs.pulseRing} onCheckedChange={(value) => setPref("pulseRing", value)} />
             </div>
-            {composer && <PresenceComposer {...composer} />}
+            {composer && <><PresenceComposer {...composer} variant="default" /><ActivePulses handle={composer.handle} /></>}
           </PresenceBlock>
         </div>
         <LiveIntegrationsPanel prefs={prefs} setPref={setPref} />
