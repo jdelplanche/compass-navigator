@@ -12,6 +12,7 @@ export const Route = createFileRoute("/studio")({
     mode: search["mode"] === "qr" ? ("qr" as const) : undefined,
     type: typeof search["type"] === "string" ? (search["type"] as string) : undefined,
     url: typeof search["url"] === "string" ? (search["url"] as string) : undefined,
+    workspace: typeof search["workspace"] === "string" ? (search["workspace"] as string) : undefined,
   }),
   head: () => ({
     meta: [

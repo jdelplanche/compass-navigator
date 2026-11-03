@@ -131,7 +131,7 @@ function NewWorkspaceWizard() {
 
   return (
     <main className={`mx-auto w-full px-4 py-8 sm:py-12 ${current === "plan" ? "max-w-6xl" : "max-w-2xl"}`}>
-      <Link to="/studio" search={{ mode: undefined, type: undefined, url: undefined }} className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <Link to="/studio" search={{ mode: undefined, type: undefined, url: undefined, workspace: undefined }} className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Terug naar Studio
       </Link>
       <h1 className="flex items-center gap-2 font-display text-2xl sm:text-3xl"><Building2 className="h-6 w-6" /> Nieuwe workspace</h1>

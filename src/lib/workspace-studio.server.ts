@@ -171,3 +171,27 @@ export async function discardWorkspaceDraft(
     pendingMigration(error);
   }
 }
+
+/** Stores the workspace QR style in the draft and, when live, the published studio snapshot. */
+export async function saveWorkspaceQr(workspaceId: string, style: unknown): Promise<void> {
+  const encoded = JSON.stringify(style);
+  try {
+    const results = await sql.transaction([
+      sql`update public.workspace_profile_drafts
+        set payload = jsonb_set(payload, '{displayPrefs}',
+              coalesce(payload->'displayPrefs', '{}'::jsonb) || jsonb_build_object('qrSettings', ${encoded}::jsonb), true),
+            revision = revision + 1,
+            published_revision = case when published_revision = revision then revision + 1 else published_revision end,
+            updated_at = now()
+        where workspace_id = ${workspaceId} returning workspace_id`,
+      sql`update public.workspaces
+        set public_profile = jsonb_set(public_profile, '{studio,displayPrefs}',
+              coalesce(public_profile->'studio'->'displayPrefs', '{}'::jsonb) || jsonb_build_object('qrSettings', ${encoded}::jsonb), true)
+        where id = ${workspaceId} and jsonb_typeof(public_profile->'studio') = 'object'`,
+    ]);
+    if (!results[0]?.length) throw new Error("workspace_draft_not_found");
+  } catch (error) {
+    pendingMigration(error);
+    throw error;
+  }
+}

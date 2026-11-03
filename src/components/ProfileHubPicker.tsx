@@ -6,7 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useServerFn } from "@tanstack/react-start";
 import { getStudioProfile } from "@/lib/studio-profile.functions";
-import { saveQrSettingsFn } from "@/lib/qr-settings.functions";
+import { saveQrSettingsFn, saveWorkspaceQrSettingsFn } from "@/lib/qr-settings.functions";
+import { getWorkspaceContext, type WorkspaceSummary } from "@/lib/workspaces.functions";
+import { getWorkspaceStudioProfile } from "@/lib/workspace-studio.functions";
+import { canEditWorkspaceHub, workspacePublicPath } from "@/lib/workspace-rules";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProfileQrDesignContext } from "@/lib/qr-design-bridge";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,7 +36,15 @@ export function ProfileHubPicker({ values, onChange }: Props) {
   const [saved, setSaved] = useState(false);
   const loadProfile = useServerFn(getStudioProfile);
   const saveQr = useServerFn(saveQrSettingsFn);
+  const saveWsQr = useServerFn(saveWorkspaceQrSettingsFn);
+  const loadWsContext = useServerFn(getWorkspaceContext);
+  const loadWsProfile = useServerFn(getWorkspaceStudioProfile);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
+  /** "personal" or a workspace id: which profile the QR opens and saves to. */
+  const [target, setTarget] = useState<string>("personal");
+  const [wsPath, setWsPath] = useState<string | null>(null);
   const design = useContext(ProfileQrDesignContext);
+  const activeWs = workspaces.find((w) => w.id === target) ?? null;
   const queryClient = useQueryClient();
 
   useEffect(() => { setSaved(false); }, [design]);
@@ -41,7 +53,8 @@ export function ProfileHubPicker({ values, onChange }: Props) {
     if (!design || saving) return;
     setSaving(true);
     try {
-      await saveQr({ data: design });
+      if (activeWs) await saveWsQr({ data: { workspaceId: activeWs.id, style: design } });
+      else await saveQr({ data: design });
       await queryClient.invalidateQueries({ predicate: query => query.queryKey.some(key => typeof key === "string" && /profile|studio|draft/.test(key)) });
       setSaved(true);
       toast.success(trI18n.t("ui.f54132e830"));
@@ -70,6 +83,23 @@ export function ProfileHubPicker({ values, onChange }: Props) {
         console.error("[hub-picker:load:failed]", error);
       }
       if (cancelled) return;
+      let wsList: WorkspaceSummary[] = [];
+      try {
+        const ctx = await loadWsContext();
+        if (ctx.available) wsList = ctx.workspaces;
+      } catch (error) {
+        console.error("[hub-picker:workspaces:failed]", error);
+      }
+      if (cancelled) return;
+      setWorkspaces(wsList);
+      const wanted = new URLSearchParams(window.location.search).get("workspace")?.toLowerCase();
+      const preset = wanted ? wsList.find((w) => w.slug.toLowerCase() === wanted) : undefined;
+      if (preset) {
+        if (data?.username) { setHandle(data.username); setVerified(Boolean(data.verified) && data.status === "active"); }
+        setLoading(false);
+        void selectTarget(preset.id, wsList);
+        return;
+      }
       if (data?.username) {
         const isVerified = Boolean(data.verified) && data.status === "active";
         setHandle(data.username);
@@ -83,6 +113,29 @@ export function ProfileHubPicker({ values, onChange }: Props) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  async function selectTarget(id: string, list: WorkspaceSummary[] = workspaces) {
+    setTarget(id);
+    setSaved(false);
+    const ws = list.find((w) => w.id === id);
+    if (!ws) {
+      setWsPath(null);
+      const h = handle ?? normalizeHandle(manual);
+      onChange("hub_url", h ? `${origin}${profilePath(h, verified)}` : "");
+      return;
+    }
+    const fallback = workspacePublicPath(ws.slug, null);
+    setWsPath(fallback);
+    onChange("hub_url", `${origin}${fallback}`);
+    try {
+      const p = await loadWsProfile({ data: { workspaceSlug: ws.slug } });
+      const path = workspacePublicPath(p.workspaceSlug, { name: p.domain, verified: p.domainVerified });
+      setWsPath(path);
+      onChange("hub_url", `${origin}${path}`);
+    } catch (error) {
+      console.error("[hub-picker:workspace-profile:failed]", error);
+    }
+  }
 
   const setManualHandle = (raw: string) => {
     const h = normalizeHandle(raw);
@@ -111,6 +164,22 @@ export function ProfileHubPicker({ values, onChange }: Props) {
         </p>
       </div>
 
+      {user && (
+        <Select value={target} onValueChange={(v) => void selectTarget(v)}>
+          <SelectTrigger className="h-11 rounded-xl" aria-label="Profiel voor deze QR-code">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">Persoonlijk{handle ? ` · @${handle}` : ""}</SelectItem>
+            {workspaces.map((w) => (
+              <SelectItem key={w.id} value={w.id}>Workspace · {w.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+
+      {!activeWs && (!user || !handle) && (
+<>
       <div className="flex items-center gap-2">
         <span className="shrink-0 font-mono text-[13px] text-muted-foreground">@</span>
         <Input
@@ -135,11 +204,14 @@ export function ProfileHubPicker({ values, onChange }: Props) {
         </p>
       )}
 
+</>
+      )}
+
       {/* Doelprofiel: ruime padding zodat de tekst nergens afgesneden wordt. */}
       <div className="rounded-lg bg-muted/50 px-3 py-3 sm:px-4">
         <p className="break-all font-mono text-[13px] font-medium leading-relaxed text-foreground">
           {host}
-          {profilePath(shown || "jouwnaam", verified)}
+          {activeWs ? wsPath ?? workspacePublicPath(activeWs.slug, null) : profilePath(shown || "jouwnaam", verified)}
         </p>
         <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
           Gratis profiel op rout.be. Custom domeinen beschikbaar op Pro. Gratis profielen gebruiken
@@ -151,13 +223,16 @@ export function ProfileHubPicker({ values, onChange }: Props) {
       <Button
         type="button"
         onClick={() => void saveDesign()}
-        disabled={saving || !user || !design}
+        disabled={saving || !user || !design || (activeWs ? !canEditWorkspaceHub(activeWs.role) : false)}
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : null}
         {!user ? "Log in om op te slaan" : saved ? "Opgeslagen" : "Opslaan"}
       </Button>
-      <Link to="/studio" className="block text-center text-[12px] text-muted-foreground underline-offset-4 hover:underline">
+      {activeWs && !canEditWorkspaceHub(activeWs.role) && (
+        <p className="text-center text-[11px] text-muted-foreground">Je rol in deze workspace mag de QR-stijl niet opslaan.</p>
+      )}
+      <Link to={activeWs ? `/studio/w/${activeWs.slug}/studio` : "/studio"} className="block text-center text-[12px] text-muted-foreground underline-offset-4 hover:underline">
         Beheer profielhub →
       </Link>
 

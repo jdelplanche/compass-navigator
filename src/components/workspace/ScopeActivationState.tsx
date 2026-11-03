@@ -20,7 +20,7 @@ export function ScopeActivationState({ kind, onRetry }: { kind: "denied" | "erro
       <div className="flex flex-wrap justify-center gap-2">
         {kind === "error" && <Button size="sm" onClick={onRetry}>Opnieuw proberen</Button>}
         <Button asChild size="sm" variant="outline">
-          <Link to="/studio" search={{ mode: undefined, type: undefined, url: undefined }}>Terug naar mijn Studio</Link>
+          <Link to="/studio" search={{ mode: undefined, type: undefined, url: undefined, workspace: undefined }}>Terug naar mijn Studio</Link>
         </Button>
       </div>
     </div>

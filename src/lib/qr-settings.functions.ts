@@ -23,3 +23,22 @@ export const saveQrSettingsFn = createServerFn({ method: "POST" })
     await savePublishedProfileQr(context.userId, data);
     return { ok: true as const, qrSettings: data };
   });
+
+/** Same as saveQrSettingsFn, but for a workspace profile the caller may edit. */
+export const saveWorkspaceQrSettingsFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((data: unknown) => {
+    const d = (data ?? {}) as { workspaceId?: unknown; style?: unknown };
+    if (typeof d.workspaceId !== "string" || !/^[0-9a-f-]{36}$/i.test(d.workspaceId)) throw new Error("invalid_workspace");
+    const style = normalizeQrSettings(d.style);
+    if (!style) throw new Error("invalid_qr_settings");
+    return { workspaceId: d.workspaceId, style };
+  })
+  .handler(async ({ data, context }) => {
+    const { getWorkspaceRole } = await import("@/lib/workspaces.server");
+    const { canEditWorkspaceHub } = await import("@/lib/workspace-rules");
+    if (!canEditWorkspaceHub(await getWorkspaceRole(context.userId, data.workspaceId))) throw new Error("forbidden");
+    const { saveWorkspaceQr } = await import("@/lib/workspace-studio.server");
+    await saveWorkspaceQr(data.workspaceId, data.style);
+    return { ok: true as const, qrSettings: data.style };
+  });
