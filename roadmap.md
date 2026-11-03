@@ -38,3 +38,9 @@
 - [x] Collapse Privacyregels, API-sleutel, Eigen status into accordions.
 - [x] Richer pulse composer (story-style: text backgrounds, fonts, stickers) and Command Center posting/management.
 - [x] Applied 0164–0191 to Neon (0167 held back: deletes voice-key table, needs owner OK)
+
+## Platform improvement plan (2026-11-03, approved)
+- [ ] Fase 1: visibility rules on public profile, exact-time scheduling, og:locale fix, shared visit dedupe, export screen i18n, apply 0167
+- [ ] Fase 2: restore from own export + LinkStack import, vCard block
+- [ ] Fase 3: email signup block (owner-only RLS per profile, encrypted at rest, CSV only via Studio) + richer stats (referrer domain, country, filters, top links)
+- [ ] Fase 4: archive view, non-navigating preview, countdown block, optional bento tile sizes
