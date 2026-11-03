@@ -57,22 +57,14 @@ export function LiveStatusAccordion({ prefs, setPref, composer }: { prefs: Profi
             {composer && <PresenceComposer {...composer} />}
           </PresenceBlock>
         </div>
-        <div className="mt-5 space-y-4 border-t border-border pt-4">
-          {([['steamPresence', 'studio.effects.steam', 'studio.effects.steamHelp'], ['lastfmPresence', 'studio.effects.lastfm', 'studio.effects.lastfmHelp']] as const).map(([key, title, help]) => (
-            <div key={key} className="flex items-start justify-between gap-4">
-              <div className="min-w-0"><p className="text-sm font-medium">{t(title)}</p><p className="text-sm text-muted-foreground">{t(help)}</p></div>
-              <Switch aria-label={t(title)} checked={prefs[key]} onCheckedChange={(value) => setPref(key, value)} />
-            </div>
-          ))}
-        </div>
-        <LiveIntegrationsPanel />
+        <LiveIntegrationsPanel prefs={prefs} setPref={setPref} />
       </AccordionContent>
     </AccordionItem>
   );
 }
 
 /** ⚡ Live Integraties als eigen inklapbaar sub-paneel. */
-function LiveIntegrationsPanel() {
+function LiveIntegrationsPanel({ prefs, setPref }: { prefs: ProfileDisplayPrefs; setPref: SetPref }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const count = useLiveIntegrationCount();
@@ -87,7 +79,15 @@ function LiveIntegrationsPanel() {
         <span>{t("studio.live.count", { count })}</span>
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
-      {open && <div className="mt-3"><LiveIntegrations /></div>}
+      {open && <div className="mt-3 space-y-3">
+        {([['steamPresence', 'studio.effects.steam', 'studio.effects.steamHelp'], ['lastfmPresence', 'studio.effects.lastfm', 'studio.effects.lastfmHelp']] as const).map(([key, title, help]) => (
+          <div key={key} className="flex items-start justify-between gap-4 rounded-xl border border-border p-3">
+            <div className="min-w-0"><p className="text-sm font-medium">{t(title)}</p><p className="text-xs text-muted-foreground">{t(help)}</p></div>
+            <Switch aria-label={t(title)} checked={prefs[key]} onCheckedChange={(value) => setPref(key, value)} />
+          </div>
+        ))}
+        <LiveIntegrations />
+      </div>}
     </section>
   );
 }
