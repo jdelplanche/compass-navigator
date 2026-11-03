@@ -37,4 +37,4 @@
 - [x] Move Steam / Last.fm toggles into Live-koppelingen.
 - [x] Collapse Privacyregels, API-sleutel, Eigen status into accordions.
 - [x] Richer pulse composer (story-style: text backgrounds, fonts, stickers) and Command Center posting/management.
-- [ ] Apply db/0191 (pulse styles) after 0185–0187 in Neon; styled pulses fail to save until then (plain text pulses unaffected).
+- [x] Applied 0164–0191 to Neon (0167 held back: deletes voice-key table, needs owner OK)
